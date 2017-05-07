@@ -5,7 +5,6 @@ RUN set -xe && addgroup -S -g 1000 php && adduser -SDu 1000 -G php php
 
 COPY composer.sh /composer.sh
 
-RUN chmod +x /composer.sh
 
 USER php
 
