@@ -1,7 +1,7 @@
 FROM php:5.6-fpm-alpine
 
 ENV NGINX_VERSION 1.13.0
-
+                        
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
 		--prefix=/etc/nginx \
@@ -17,8 +17,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
 		--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
 		--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-		--user=nginx \
-		--group=nginx \
+		--user=www-data \
+		--group=www-data \
 		--with-http_ssl_module \
 		--with-http_realip_module \
 		--with-http_addition_module \
@@ -48,8 +48,9 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-file-aio \
 		--with-http_v2_module \
 	" \
-	&& addgroup -S nginx \
-	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
+	&& deluser www-data \
+	&& addgroup -S -g 1000 www-data \
+	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G www-data www-data \
 	&& apk add --no-cache --virtual .build-deps \
 		gcc \
 		libc-dev \
@@ -140,13 +141,13 @@ RUN set -xe \
 	&& apk del freetype-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev icu-dev
 
 
-RUN mkdir /www && chown -R nginx:nginx /www
+RUN mkdir /www && chown -R www-data:www-data /www
 
 VOLUME ["/etc/nginx/conf.d", "/www", "/usr/local/etc/php/conf.d"]
 
 RUN echo "<?php phpinfo();?>" > /usr/share/nginx/html/info.php \
      && chmod 644 /usr/share/nginx/html/info.php \
-     && chown -R nginx:nginx /usr/share/nginx/html
+     && chown -R www-data:www-data /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
