@@ -143,7 +143,7 @@ RUN set -xe \
 
 RUN mkdir /www && chown -R www-data:www-data /www
 
-VOLUME ["/etc/nginx/conf.d", "/www", "/usr/local/etc/php/conf.d"]
+VOLUME ["/etc/nginx/conf.d", "/usr/local/etc/php/conf.d"]
 
 RUN echo "<?php phpinfo();?>" > /usr/share/nginx/html/info.php \
      && chmod 644 /usr/share/nginx/html/info.php \
