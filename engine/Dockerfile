@@ -144,7 +144,9 @@ RUN mkdir /www && chown -R nginx:nginx /www
 
 VOLUME ["/etc/nginx/conf.d", "/www", "/usr/local/etc/php/conf.d"]
 
-RUN echo "<?php phpinfo();?>" > /www/info.php && echo "hello" > /www/test.txt
+RUN echo "<?php phpinfo();?>" > /usr/share/nginx/html/info.php \
+     && chmod 644 /usr/share/nginx/html/info.php \
+     && chown -R nginx:nginx /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
@@ -154,4 +156,7 @@ EXPOSE 80 443 9000
 
 STOPSIGNAL SIGQUIT
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
+CMD ["/run.sh"]
